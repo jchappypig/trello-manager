@@ -2,7 +2,9 @@ Rails.application.routes.draw do
 
 	#Casein routes
 	namespace :casein do
-		resources :cards, :only => [:index, :show]
+		resources :cards, :only => [:index, :show] do
+      get '/completed' => 'cards#completed', on: :collection
+    end
 	end
 
   # The priority is based upon order of creation: first created -> highest priority.

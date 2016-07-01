@@ -11,14 +11,22 @@ module Casein
     # before_filter :needs_admin_or_current_user, :only => [:action1, :action2]
 
     def index
-      @casein_page_title = 'Done Cards'
+      @casein_page_title = 'Current all'
       @cards = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards']
-      # @cards = @cards +  Trello::Action.search('board:"Awesome one team" list:"pull" is:open', cards_limit: 200)['cards']
-      # @cards = @cards +  Trello::Action.search('board:"Awesome one team" list:"work in progress" closed:false is:open', cards_limit: 200)['cards']
-      # @cards = @cards +  Trello::Action.search('board:"Awesome one team" list:"up next" is:open', cards_limit: 200)['cards']
-
+      @cards = @cards +  Trello::Action.search('board:"Awesome one team" list:"pull" is:open', cards_limit: 200)['cards']
+      @cards = @cards +  Trello::Action.search('board:"Awesome one team" list:"work in progress" closed:false is:open', cards_limit: 200)['cards']
+      @cards = @cards +  Trello::Action.search('board:"Awesome one team" list:"up next" is:open', cards_limit: 200)['cards']
 
       @points = calculate_points(@cards)
+    end
+
+    def completed
+      @casein_page_title = 'Current completed'
+      @cards = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards']
+
+      @points = calculate_points(@cards)
+
+      render :index
     end
 
     def show
