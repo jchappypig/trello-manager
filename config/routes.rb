@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
 	#Casein routes
 	namespace :casein do
+		resources :sprints
 		resources :memebers
 		resources :labels
 		resources :cards, :only => [:index, :show] do
