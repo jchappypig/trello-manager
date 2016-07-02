@@ -1,3 +1,5 @@
+require 'csv'
+
 class Exporter
   class << self
     def cards_to_csv(cards)
