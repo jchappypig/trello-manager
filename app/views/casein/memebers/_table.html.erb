@@ -9,12 +9,12 @@
 		</tr>
 	</thead>
 	
-	<% memebers.each do |memeber| %>
+	<% members.each do |member| %>
 		<tr>
-			<td><%= casein_table_cell_link memeber.full_name, casein_memeber_path(memeber) %></td>
-			<td><%= casein_table_cell_link memeber.trello_identifier, casein_memeber_path(memeber) %></td>
+			<td><%= casein_table_cell_link member.full_name, casein_member_path(member) %></td>
+			<td><%= casein_table_cell_link member.trello_identifier, casein_member_path(member) %></td>
 			<td class="delete">
-				<%= link_to(casein_show_row_icon("trash"), casein_memeber_path(memeber), :method => :delete, :data => { :confirm => "Are you sure you want to delete this memeber?" }) %>
+				<%= link_to(casein_show_row_icon("trash"), casein_member_path(member), :method => :delete, :data => { :confirm => "Are you sure you want to delete this member?" }) %>
 			</td>
 		</tr>
 	<% end %>

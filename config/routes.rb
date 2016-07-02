@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 	#Casein routes
 	namespace :casein do
 		resources :sprints
-		resources :memebers
+		resources :members
 		resources :labels
 		resources :cards, :only => [:index, :show] do
       get '/completed' => 'cards#completed', on: :collection
