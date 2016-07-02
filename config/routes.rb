@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
 	#Casein routes
 	namespace :casein do
+		resources :labels
 		resources :cards, :only => [:index, :show] do
       get '/completed' => 'cards#completed', on: :collection
       get '/export' => 'cards#export', on: :collection
