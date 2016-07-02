@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160702143711) do
+ActiveRecord::Schema.define(version: 20160702145044) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,13 @@ ActiveRecord::Schema.define(version: 20160702143711) do
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
     t.string   "trello_identifier"
+  end
+
+  create_table "memebers", force: :cascade do |t|
+    t.string   "full_name"
+    t.string   "trello_identifier"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
 end
