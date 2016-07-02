@@ -1,0 +1,2 @@
+class CurrentCard < Card
+end
