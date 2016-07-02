@@ -12,19 +12,23 @@ module Casein
 
     def index
       @casein_page_title = 'Current all'
-      @cards = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards']
-      @cards = @cards +  Trello::Action.search('board:"Awesome one team" list:"pull" is:open', cards_limit: 200)['cards']
-      @cards = @cards +  Trello::Action.search('board:"Awesome one team" list:"work in progress" closed:false is:open', cards_limit: 200)['cards']
-      @cards = @cards +  Trello::Action.search('board:"Awesome one team" list:"up next" is:open', cards_limit: 200)['cards']
 
-      @points = calculate_points(@cards)
+      @cards = {'Total' => [], 'Milli' => [], 'Home Now' => [], 'LM Marketing' => [], 'LM Lead' => [], 'Other' => []}
+      @cards['Total'] = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards']
+      @cards['Total'] = @cards['Total'] +  Trello::Action.search('board:"Awesome one team" list:"pull" is:open', cards_limit: 200)['cards']
+      @cards['Total'] = @cards['Total'] +  Trello::Action.search('board:"Awesome one team" list:"work in progress" closed:false is:open', cards_limit: 200)['cards']
+      @cards['Total'] = @cards['Total'] +  Trello::Action.search('board:"Awesome one team" list:"up next" is:open', cards_limit: 200)['cards']
+
+      @points = calculate(@cards)
     end
 
     def completed
       @casein_page_title = 'Current completed'
-      @cards = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards']
 
-      @points = calculate_points(@cards)
+      @cards = {'Total' => [], 'Milli' => [], 'Home Now' => [], 'LM Marketing' => [], 'LM Lead' => [], 'Other' => []}
+      @cards['Total'] = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards']
+
+      @points = calculate(@cards)
 
       render :index
     end
@@ -36,10 +40,10 @@ module Casein
 
     private
 
-    def calculate_points(cards)
+    def calculate(cards)
       points = {'Total' => 0, 'Milli' => 0, 'Home Now' => 0, 'LM Marketing' => 0, 'LM Lead' => 0, 'Other' => 0}
 
-      cards.each do |card|
+      cards['Total'].each do |card|
         size_match = /\[(s|m|l)\]/i.match(card.name)
         size = size_match.present? ? size_match[1] : 's'
 
@@ -47,18 +51,19 @@ module Casein
 
         points['Total'] = points['Total'] + SIZE_MAP[size]
 
-        calculate_points_for_label(points, labels, size, 'Milli') ||
-            calculate_points_for_label(points, labels, size, 'Home Now') ||
-            calculate_points_for_label(points, labels, size, 'LM Marketing') ||
-            calculate_points_for_label(points, labels, size, 'Other')
+        calculate_for_label(points, size, cards, card, labels, 'Milli') ||
+            calculate_for_label(points, size, cards, card, labels, 'Home Now') ||
+            calculate_for_label(points, size, cards, card, labels, 'LM Marketing') ||
+            calculate_for_label(points, size, cards, card, labels, 'Other')
       end
 
       points
     end
 
-    def calculate_points_for_label(points, labels, size, label_name)
+    def calculate_for_label(points, size, cards, card, labels, label_name)
       if label_is?(labels, label_name) || label_name == 'Other'
         points[label_name] = points[label_name] + SIZE_MAP[size]
+        cards[label_name] << card
       end
     end
 
