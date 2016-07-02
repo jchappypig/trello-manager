@@ -2,9 +2,8 @@
 
 module Casein
   class CardsController < Casein::CaseinController
+    before_filter :sync_trello, only: [:index, :completed]
 
-
-    SIZE_MAP = {'s' => 1, 'S' => 1, 'm' => 3, 'M' => 3, 'l' => 5, 'L' => 5}
 
     ## optional filters for defining usage according to Casein::AdminUser access_levels
     # before_filter :needs_admin, :except => [:action1, :action2]
@@ -13,11 +12,13 @@ module Casein
     def index
       @casein_page_title = 'Current all'
 
-      @cards = {'Total' => [], 'Milli' => [], 'Home Now' => [], 'LM Marketing' => [], 'LM Lead' => [], 'Other' => []}
-      @cards['Total'] = Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards'])
-      @cards['Total'] = @cards['Total'] +  Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"pull" is:open', cards_limit: 200)['cards'])
-      @cards['Total'] = @cards['Total'] +  Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"work in progress" closed:false is:open', cards_limit: 200)['cards'])
-      @cards['Total'] = @cards['Total'] +  Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"up next" is:open', cards_limit: 200)['cards'])
+      @cards = {}
+
+      @cards['Total'] = CurrentCard.all
+
+      Label.all.each do |label|
+        @cards[label.name] = CurrentCard.with_label(label.name)
+      end
 
       @points = calculate(@cards)
     end
@@ -25,8 +26,13 @@ module Casein
     def completed
       @casein_page_title = 'Current completed'
 
-      @cards = {'Total' => [], 'Milli' => [], 'Home Now' => [], 'LM Marketing' => [], 'LM Lead' => [], 'Other' => []}
-      @cards['Total'] = Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards'])
+      @cards = {}
+
+      @cards['Total'] = CurrentCard.done
+
+      Label.all.each do |label|
+        @cards[label] = CurrentCard.done.with_label(label.name)
+      end
 
       @points = calculate(@cards)
 
@@ -34,7 +40,7 @@ module Casein
     end
 
     def export
-      cards = Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards'])
+      cards = CurrentCard.all
       respond_to do |format|
         format.csv { send_data Exporter.cards_to_csv(cards), filename: "cards-#{Time.now}.csv" }
       end
@@ -48,18 +54,11 @@ module Casein
     private
 
     def calculate(cards)
-      points = {'Total' => 0, 'Milli' => 0, 'Home Now' => 0, 'LM Marketing' => 0, 'LM Lead' => 0, 'Other' => 0}
+      points = {}
 
-      cards['Total'].each do |card|
-        size_match = /\[(s|m|l)\]/i.match(card.name)
-        size = size_match.present? ? size_match[1] : 's'
-
-        points['Total'] = points['Total'] + SIZE_MAP[size]
-
-        calculate_for_label(points, size, cards, card, 'Milli') ||
-            calculate_for_label(points, size, cards, card, 'Home Now') ||
-            calculate_for_label(points, size, cards, card, 'LM Marketing') ||
-            calculate_for_label(points, size, cards, card, 'Other')
+      cards.each do |label, labeled_cards|
+        label_points = labeled_cards.map(&:estimated_size).sum
+        points[label] = label_points
       end
 
       points
@@ -72,9 +71,18 @@ module Casein
       end
     end
 
+    def sync_trello
+      if CurrentCard.last && (CurrentCard.last.created_at < Time.now - 15.minutes)
+        CurrentCard.delete_all
+        trello_cards = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards'] +
+            Trello::Action.search('board:"Awesome one team" list:"pull" is:open', cards_limit: 200)['cards'] +
+            Trello::Action.search('board:"Awesome one team" list:"work in progress" closed:false is:open', cards_limit: 200)['cards'] +
+            Trello::Action.search('board:"Awesome one team" list:"up next" is:open', cards_limit: 200)['cards']
 
-    def label_is?(labels, label_name)
-      labels.include?(label_name)
+        trello_cards.each do |trello_card|
+          Syncer.from_trello(trello_card)
+        end
+      end
     end
 
   end

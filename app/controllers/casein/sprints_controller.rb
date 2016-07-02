@@ -59,7 +59,7 @@ module Casein
     private
       
       def sprint_params
-        params.require(:sprint).permit(:start, :end, :number)
+        params.require(:sprint).permit(:start, :finish, :number)
       end
 
   end
