@@ -14,10 +14,10 @@ module Casein
       @casein_page_title = 'Current all'
 
       @cards = {'Total' => [], 'Milli' => [], 'Home Now' => [], 'LM Marketing' => [], 'LM Lead' => [], 'Other' => []}
-      @cards['Total'] = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards']
-      @cards['Total'] = @cards['Total'] +  Trello::Action.search('board:"Awesome one team" list:"pull" is:open', cards_limit: 200)['cards']
-      @cards['Total'] = @cards['Total'] +  Trello::Action.search('board:"Awesome one team" list:"work in progress" closed:false is:open', cards_limit: 200)['cards']
-      @cards['Total'] = @cards['Total'] +  Trello::Action.search('board:"Awesome one team" list:"up next" is:open', cards_limit: 200)['cards']
+      @cards['Total'] = Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards'])
+      @cards['Total'] = @cards['Total'] +  Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"pull" is:open', cards_limit: 200)['cards'])
+      @cards['Total'] = @cards['Total'] +  Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"work in progress" closed:false is:open', cards_limit: 200)['cards'])
+      @cards['Total'] = @cards['Total'] +  Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"up next" is:open', cards_limit: 200)['cards'])
 
       @points = calculate(@cards)
     end
@@ -26,11 +26,18 @@ module Casein
       @casein_page_title = 'Current completed'
 
       @cards = {'Total' => [], 'Milli' => [], 'Home Now' => [], 'LM Marketing' => [], 'LM Lead' => [], 'Other' => []}
-      @cards['Total'] = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards']
+      @cards['Total'] = Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards'])
 
       @points = calculate(@cards)
 
       render :index
+    end
+
+    def export
+      cards = Card.bulk_from_trello(Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards'])
+      respond_to do |format|
+        format.csv { send_data Exporter.cards_to_csv(cards), filename: "cards-#{Time.now}.csv" }
+      end
     end
 
     def show
@@ -47,21 +54,19 @@ module Casein
         size_match = /\[(s|m|l)\]/i.match(card.name)
         size = size_match.present? ? size_match[1] : 's'
 
-        labels = card.card_labels
-
         points['Total'] = points['Total'] + SIZE_MAP[size]
 
-        calculate_for_label(points, size, cards, card, labels, 'Milli') ||
-            calculate_for_label(points, size, cards, card, labels, 'Home Now') ||
-            calculate_for_label(points, size, cards, card, labels, 'LM Marketing') ||
-            calculate_for_label(points, size, cards, card, labels, 'Other')
+        calculate_for_label(points, size, cards, card, 'Milli') ||
+            calculate_for_label(points, size, cards, card, 'Home Now') ||
+            calculate_for_label(points, size, cards, card, 'LM Marketing') ||
+            calculate_for_label(points, size, cards, card, 'Other')
       end
 
       points
     end
 
-    def calculate_for_label(points, size, cards, card, labels, label_name)
-      if label_is?(labels, label_name) || label_name == 'Other'
+    def calculate_for_label(points, size, cards, card, label_name)
+      if label_is?(card.labels, label_name) || label_name == 'Other'
         points[label_name] = points[label_name] + SIZE_MAP[size]
         cards[label_name] << card
       end
@@ -69,7 +74,7 @@ module Casein
 
 
     def label_is?(labels, label_name)
-      labels.select { |label| label['name'] == label_name }.any?
+      labels.include?(label_name)
     end
 
   end
