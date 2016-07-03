@@ -12,31 +12,21 @@ module Casein
     def index
       @casein_page_title = 'Current all'
 
-      @cards, @points = {}, {}
-      labels = Label::ALL.map{|label| label['name']}
-
-      labels.each do |label|
-        @cards[label] = CurrentCard.with_label(label)
-        @points[label] = @cards[label].map(&:estimated_size).sum
-      end
-
-      @cards['Total'] = labels.reduce([]) {|total_cards, label| total_cards + @cards[label]}
-      @points['Total'] = labels.reduce(0) {|total_points, label| total_points + @points[label]}
+      calculate_cards(CurrentCard.all)
     end
 
     def completed
       @casein_page_title = 'Current completed'
 
-      @cards, @points = {}, {}
-      labels = Label::ALL.map{|label| label['name']}
+      calculate_cards(CurrentCard.done)
 
-      labels.each do |label|
-        @cards[label] = CurrentCard.done.with_label(label)
-        @points[label] = @cards[label].map(&:estimated_size).sum
-      end
+      render :index
+    end
 
-      @cards['Total'] = labels.reduce([]) {|total_cards, label| total_cards + @cards[label]}
-      @points['Total'] = labels.reduce(0) {|total_points, label| total_points + @points[label]}
+    def previous_completed
+      @casein_page_title = 'Previous completed'
+
+      calculate_cards(HistoricalCard.where(sprint: Sprint.which(Time.now.utc)))
 
       render :index
     end
@@ -54,18 +44,6 @@ module Casein
     end
 
     private
-
-    def calculate(cards)
-      points = {}
-
-      cards.each do |label, labeled_cards|
-        label_points = labeled_cards.map(&:estimated_size).sum
-        points[label] = label_points
-      end
-
-      points
-    end
-
     def sync_trello
       current_sprint_has_no_card = !CurrentCard.any?
       if current_sprint_has_no_card || (CurrentCard.last.created_at < Time.now - 15.minutes)
@@ -78,6 +56,19 @@ module Casein
 
         Syncer.mass_from_trello(trello_cards)
       end
+    end
+
+    def calculate_cards(scope)
+      @cards, @points = {}, {}
+      labels = Label::ALL.map { |label| label['name'] }
+
+      labels.each do |label|
+        @cards[label] = scope.with_label(label)
+        @points[label] = @cards[label].map(&:estimated_size).sum
+      end
+
+      @cards['Total'] = labels.reduce([]) { |total_cards, label| total_cards + @cards[label] }
+      @points['Total'] = labels.reduce(0) { |total_points, label| total_points + @points[label] }
     end
 
   end

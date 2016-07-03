@@ -13,9 +13,9 @@
 
       <% labelled_cards.each do |card| %>
           <tr>
-            <td><%= casein_table_cell_link card.name, card.url %></td>
-            <td><%= casein_table_cell_link card.estimated_size, card.url %></td>
-            <td><%= casein_table_cell_link card.members, card.url %></td>
+            <td><%= casein_table_cell_link card.name, card.url, target: '_blank' %></td>
+            <td><%= casein_table_cell_link card.estimated_size, card.url, target: '_blank' %></td>
+            <td><%= casein_table_cell_link card.members, card.url, target: '_blank' %></td>
           </tr>
       <% end %>
     </table>

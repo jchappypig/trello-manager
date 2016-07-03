@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 		resources :sprints
 		resources :cards, :only => [:index, :show] do
       get '/completed' => 'cards#completed', on: :collection
+      get '/previous' => 'cards#previous_completed', on: :collection
       get '/export' => 'cards#export', on: :collection
     end
 	end

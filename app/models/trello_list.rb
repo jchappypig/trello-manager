@@ -9,6 +9,9 @@ class TrelloList
 
   ALL = [UP_NEXT, WIP, IN_REVIEW, CURRENT_DONE, HISTORICAL_DONE]
 
+  IN_PROGRESS = [WIP, IN_REVIEW]
+  DONE = [CURRENT_DONE, HISTORICAL_DONE]
+
   class << self
     def find_by_trello_identifier(trello_identifier)
       ALL.select{|list| list['trello_identifier'] == trello_identifier}.first || NOT_FOUND
@@ -16,6 +19,16 @@ class TrelloList
 
     def find_by_name(name)
       ALL.select{|list| list['name'] == name}.first
+    end
+
+    def to_status(card)
+      if IN_PROGRESS.map{|list| list['name']}.include?(card.list)
+        'Work in Progress'
+      elsif DONE.map{|list| list['name']}.include?(card.list)
+        'Completed'
+      else
+        'Not started'
+      end
     end
   end
 end
