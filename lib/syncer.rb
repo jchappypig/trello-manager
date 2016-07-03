@@ -40,7 +40,8 @@ class Syncer
     end
 
     def save_previous(sprint_id)
-      trello_cards = Trello::Action.search('board:"Awesome one team" list:"Sprint 4 Done" is:open', cards_limit: 200)['cards']
+      sprint = Sprint.find(sprint_id)
+      trello_cards = Trello::Action.search("board:\"Awesome one team\" list:\"Sprint #{sprint.number} Done\" is:open", cards_limit: 200)['cards']
 
       Syncer.mass_from_trello(trello_cards, HistoricalCard.name, sprint_id)
     end
