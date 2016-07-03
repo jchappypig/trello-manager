@@ -8,7 +8,10 @@ Rails.application.routes.draw do
       get '/previous' => 'cards#previous_completed', on: :collection
       get '/export' => 'cards#export', on: :collection
     end
-	end
+  end
+
+  get '/burn-up' => 'teams#burn_up'
+  get '/team-velocity' =>'teams#velocity'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
