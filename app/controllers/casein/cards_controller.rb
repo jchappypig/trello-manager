@@ -13,10 +13,10 @@ module Casein
       @casein_page_title = 'Current all'
 
       @cards, @points = {}, {}
-      labels = Label.pluck(:name)
+      labels = Label::ALL.map{|label| label['name']}
 
       labels.each do |label|
-        @cards[label] = CurrentCard.all.with_label(label)
+        @cards[label] = CurrentCard.with_label(label)
         @points[label] = @cards[label].map(&:estimated_size).sum
       end
 
@@ -28,7 +28,7 @@ module Casein
       @casein_page_title = 'Current completed'
 
       @cards, @points = {}, {}
-      labels = Label.pluck(:name)
+      labels = Label::ALL.map{|label| label['name']}
 
       labels.each do |label|
         @cards[label] = CurrentCard.done.with_label(label)
