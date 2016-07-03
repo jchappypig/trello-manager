@@ -34,7 +34,7 @@ module Casein
     end
 
     def export
-      cards = Cards.where(ids: params[:ids] || [])
+      cards = Card.where(id: params[:ids] || [])
       respond_to do |format|
         format.csv { send_data Exporter.cards_to_csv(cards), filename: "cards-#{Time.now}.csv" }
       end
@@ -65,7 +65,7 @@ module Casein
       labels = Label::ALL.map { |label| label['name'] }
 
       labels.each do |label|
-        @cards[label] = scope.with_label(label)
+        @cards[label] = scope.with_top_label(label)
         @points[label] = @cards[label].map(&:estimated_size).sum
       end
 

@@ -16,7 +16,7 @@ class Syncer
     end
 
     def mass_from_trello(trello_cards, type = CurrentCard.name, sprint_id = nil)
-      card_attributes = %w(name url trello_identifier list sprint_id labels members estimated_size type created_at updated_at)
+      card_attributes = %w(name url trello_identifier list sprint_id labels top_label members estimated_size type created_at updated_at)
       cards_as_json = JSON.parse(trello_cards.to_json)
 
       values = cards_as_json.reduce([]) do |values, card_as_json|
@@ -27,10 +27,11 @@ class Syncer
         list = TrelloList.find_by_trello_identifier(card.list_id)['name']
         sprint_id = 2 || Sprint.which(Time.now.utc).id
         labels = Label.to_field card.card_labels.map{|card_label| Label.find_by_trello_identifier(card_label['id'])}
+        top_label = Label.top_label(labels)['name']
         members = Member.to_field card.member_ids.map{|member_trello_id| Member.find_by_trello_identifier(member_trello_id)}
         estimated_size = Card.size(card)
 
-        values << "($$#{name}$$, $$#{url}$$, $$#{trello_identifier}$$, $$#{list}$$, #{sprint_id}, $$#{labels}$$, $$#{members}$$, #{estimated_size}, $$#{type}$$, $$#{Time.now.utc}$$, $$#{Time.now.utc}$$)"
+        values << "($$#{name}$$, $$#{url}$$, $$#{trello_identifier}$$, $$#{list}$$, #{sprint_id}, $$#{labels}$$, $$#{top_label}$$, $$#{members}$$, #{estimated_size}, $$#{type}$$, $$#{Time.now.utc}$$, $$#{Time.now.utc}$$)"
       end
 
       sql = "INSERT INTO cards (#{card_attributes.join(', ')}) VALUES #{values.join(', ')};"

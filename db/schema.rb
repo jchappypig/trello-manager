@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160703064135) do
+ActiveRecord::Schema.define(version: 20160703110220) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 20160703064135) do
     t.integer  "estimated_size"
     t.string   "labels"
     t.string   "members"
+    t.string   "top_label"
   end
 
   add_index "cards", ["sprint_id"], name: "index_cards_on_sprint_id", using: :btree
