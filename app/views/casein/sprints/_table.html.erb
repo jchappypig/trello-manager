@@ -4,7 +4,7 @@
 	<thead>
 		<tr>
 			<th><%= casein_sort_link "Start", :start %></th>
-			<th><%= casein_sort_link "End", :finish %></th>
+			<th><%= casein_sort_link "Finish", :finish %></th>
 			<th><%= casein_sort_link "Number", :number %></th>
 			<th>&nbsp;</th>
 		</tr>
@@ -13,7 +13,7 @@
 	<% sprints.each do |sprint| %>
 		<tr>
 			<td><%= casein_table_cell_link sprint.start, casein_sprint_path(sprint) %></td>
-			<td><%= casein_table_cell_link sprint.end, casein_sprint_path(sprint) %></td>
+			<td><%= casein_table_cell_link sprint.finish, casein_sprint_path(sprint) %></td>
 			<td><%= casein_table_cell_link sprint.number, casein_sprint_path(sprint) %></td>
 			<td class="delete">
 				<%= link_to(casein_show_row_icon("trash"), casein_sprint_path(sprint), :method => :delete, :data => { :confirm => "Are you sure you want to delete this sprint?" }) %>

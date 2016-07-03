@@ -12,29 +12,31 @@ module Casein
     def index
       @casein_page_title = 'Current all'
 
-      @cards = {}
+      @cards, @points = {}, {}
+      labels = Label.pluck(:name)
 
-      @cards['Total'] = CurrentCard.all
-
-      Label.all.each do |label|
-        @cards[label.name] = CurrentCard.with_label(label.name)
+      labels.each do |label|
+        @cards[label] = CurrentCard.all.with_label(label)
+        @points[label] = @cards[label].map(&:estimated_size).sum
       end
 
-      @points = calculate(@cards)
+      @cards['Total'] = labels.reduce([]) {|total_cards, label| total_cards + @cards[label]}
+      @points['Total'] = labels.reduce(0) {|total_points, label| total_points + @points[label]}
     end
 
     def completed
       @casein_page_title = 'Current completed'
 
-      @cards = {}
+      @cards, @points = {}, {}
+      labels = Label.pluck(:name)
 
-      @cards['Total'] = CurrentCard.done
-
-      Label.all.each do |label|
-        @cards[label] = CurrentCard.done.with_label(label.name)
+      labels.each do |label|
+        @cards[label] = CurrentCard.done.with_label(label)
+        @points[label] = @cards[label].map(&:estimated_size).sum
       end
 
-      @points = calculate(@cards)
+      @cards['Total'] = labels.reduce([]) {|total_cards, label| total_cards + @cards[label]}
+      @points['Total'] = labels.reduce(0) {|total_points, label| total_points + @points[label]}
 
       render :index
     end
@@ -64,24 +66,17 @@ module Casein
       points
     end
 
-    def calculate_for_label(points, size, cards, card, label_name)
-      if label_is?(card.labels, label_name) || label_name == 'Other'
-        points[label_name] = points[label_name] + SIZE_MAP[size]
-        cards[label_name] << card
-      end
-    end
-
     def sync_trello
-      if CurrentCard.last && (CurrentCard.last.created_at < Time.now - 15.minutes)
-        CurrentCard.delete_all
+      current_sprint_has_no_card = !CurrentCard.any?
+      if current_sprint_has_no_card || (CurrentCard.last.created_at < Time.now - 15.minutes)
+        CurrentCard.delete_all unless current_sprint_has_no_card
         trello_cards = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards'] +
             Trello::Action.search('board:"Awesome one team" list:"pull" is:open', cards_limit: 200)['cards'] +
             Trello::Action.search('board:"Awesome one team" list:"work in progress" closed:false is:open', cards_limit: 200)['cards'] +
             Trello::Action.search('board:"Awesome one team" list:"up next" is:open', cards_limit: 200)['cards']
 
-        trello_cards.each do |trello_card|
-          Syncer.from_trello(trello_card)
-        end
+
+        Syncer.mass_from_trello(trello_cards)
       end
     end
 

@@ -1,6 +1,6 @@
 class CreateMemebers < ActiveRecord::Migration
   def change
-    create_table :memebers do |t|
+    create_table :members do |t|
       t.string :full_name
       t.string :trello_identifier
 
