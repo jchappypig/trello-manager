@@ -15,9 +15,8 @@ class Syncer
       card.save
     end
 
-    def mass_from_trello(trello_cards, type = CurrentCard.name)
+    def mass_from_trello(trello_cards, type = CurrentCard.name, sprint_id = nil)
       card_attributes = %w(name url trello_identifier list sprint_id labels members estimated_size type created_at updated_at)
-      sprint_id = nil
       cards_as_json = JSON.parse(trello_cards.to_json)
 
       values = cards_as_json.reduce([]) do |values, card_as_json|
@@ -26,7 +25,7 @@ class Syncer
         url = card.url
         trello_identifier = card['id']
         list = TrelloList.find_by_trello_identifier(card.list_id)['name']
-        sprint_id = sprint_id || Sprint.which(Time.now.utc).id
+        sprint_id = 2 || Sprint.which(Time.now.utc).id
         labels = Label.to_field card.card_labels.map{|card_label| Label.find_by_trello_identifier(card_label['id'])}
         members = Member.to_field card.member_ids.map{|member_trello_id| Member.find_by_trello_identifier(member_trello_id)}
         estimated_size = Card.size(card)
@@ -39,10 +38,10 @@ class Syncer
       ActiveRecord::Base.connection.execute sql
     end
 
-    def save_previous
-      trello_cards = Trello::Action.search('board:"Awesome one team" list:"current" is:open', cards_limit: 200)['cards']
+    def save_previous(sprint_id)
+      trello_cards = Trello::Action.search('board:"Awesome one team" list:"Sprint 4 Done" is:open', cards_limit: 200)['cards']
 
-      Syncer.mass_from_trello(trello_cards, HistoricalCard.name)
+      Syncer.mass_from_trello(trello_cards, HistoricalCard.name, sprint_id)
     end
   end
 end

@@ -24,15 +24,17 @@ module Casein
     end
 
     def previous_completed
-      @casein_page_title = 'Previous completed'
+      sprints_ago = params[:sprints_ago] || 1
+      sprint = Sprint.which(Time.now.utc - sprints_ago.to_i*2.weeks)
+      @casein_page_title = "Previous completed (#{sprint.start} - #{sprint.finish})"
 
-      calculate_cards(HistoricalCard.where(sprint: Sprint.which(Time.now.utc)))
+      calculate_cards(HistoricalCard.where(sprint: sprint))
 
       render :index
     end
 
     def export
-      cards = CurrentCard.all
+      cards = Cards.where(ids: params[:ids] || [])
       respond_to do |format|
         format.csv { send_data Exporter.cards_to_csv(cards), filename: "cards-#{Time.now}.csv" }
       end

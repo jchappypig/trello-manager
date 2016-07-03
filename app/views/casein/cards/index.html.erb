@@ -7,6 +7,7 @@
         <%= label %> <span class="badge"><%= point %></span>
     <% end %>
   </small>
+  <%= link_to 'Export to CSV', export_casein_cards_path(format: :csv, ids: @cards['Total'].map(&:id)), target: '_blank', class: 'btn btn-primary pull-right' %>
 </h2>
 
 <%= render :partial => 'casein/cards/table', :locals => { :cards => @cards } %>
