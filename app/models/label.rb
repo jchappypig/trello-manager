@@ -27,16 +27,10 @@ class Label
     def top_label(labels_in_string)
       label_names = labels_in_string.split(DIVIDER)
 
-      label_names.reduce(nil) do|top_priority_label, label_name|
+      label_names.reduce(OTHER) do|top_priority_label, label_name|
         label = Label.find_by_name(label_name)
 
-        if !top_priority_label || top_priority_label['priority'] < label['priority']
-          top_priority_label = label
-        else
-          top_priority_label
-        end
-
-        top_priority_label
+        top_priority_label['priority'] < label['priority'] ? label : top_priority_label
       end
     end
   end
