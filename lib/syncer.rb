@@ -25,7 +25,7 @@ class Syncer
         url = card.url
         trello_identifier = card['id']
         list = TrelloList.find_by_trello_identifier(card.list_id)['name']
-        sprint_id = 2 || Sprint.which(Time.now.utc).id
+        sprint_id = sprint_id || Sprint.which(Time.now.utc).id
         labels = Label.to_field card.card_labels.map{|card_label| Label.find_by_trello_identifier(card_label['id'])}
         top_label = Label.top_label(labels)['name']
         members = Member.to_field card.member_ids.map{|member_trello_id| Member.find_by_trello_identifier(member_trello_id)}
