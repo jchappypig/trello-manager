@@ -6,7 +6,7 @@ class Syncer
       card.name = trello_card.name
       card.url = trello_card.url
       card.trello_identifier = trello_card.id
-      card.list = TrelloList.find_by_trello_identifier(trello_card.list_id)
+      card.list = TrelloList.find_by_trello_identifier(trello_card.list_id)['name']
       card.sprint = Sprint.last.id
       card.labels = Label.to_field trello_card.card_labels.map{|card_label| Label.find_by_trello_identifier(card_label['id'])}
       card.members = Member.to_field trello_card.member_ids.map{|member_trello_id| Member.find_by_trello_identifier(member_trello_id)}
@@ -25,7 +25,7 @@ class Syncer
         name = card.name
         url = card.url
         trello_identifier = card['id']
-        list = TrelloList.find_by_trello_identifier(card.list_id)
+        list = TrelloList.find_by_trello_identifier(card.list_id)['name']
         sprint_id = sprint_id || Sprint.last.id
         labels = Label.to_field card.card_labels.map{|card_label| Label.find_by_trello_identifier(card_label['id'])}
         members = Member.to_field card.member_ids.map{|member_trello_id| Member.find_by_trello_identifier(member_trello_id)}
