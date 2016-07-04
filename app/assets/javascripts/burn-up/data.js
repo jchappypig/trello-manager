@@ -28,16 +28,16 @@ $(function () {
         },
         series: [{
             name: 'Milli',
-            data: [20, 41, 65, 101, 141]
+            data: [20, 41, 65, 101, 143]
         }, {
             name: 'LM Marketing',
-            data: [5, 7, 11, 15, 25]
+            data: [5, 7, 11, 15, 22]
         }, {
             name: 'LM Lead',
             data: [0, 0, 4, 5, 5]
         }, {
             name: 'Home Now',
-            data: [11, 33, 42, 56, 74]
+            data: [11, 33, 42, 56, 75]
         }, {
             name: 'Base Line',
             data: [40, 80, 120, 160, 200]
