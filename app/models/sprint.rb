@@ -3,7 +3,7 @@ class Sprint < ActiveRecord::Base
 
   class << self
     def which(date)
-      Sprint.where('start <= ?', date.to_date).where('finish >= ?', date.to_date - 1.days).first
+      Sprint.where('start <= ?', date.to_date).where('finish >= ?', date.to_date).first
     end
 
     def current

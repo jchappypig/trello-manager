@@ -12,7 +12,7 @@ class TrelloList
   ALL = [UP_NEXT, WIP, IN_REVIEW, CURRENT_DONE, HISTORICAL_DONE, SPRINT_4_DONE, SPRINT_5_DONE]
 
   IN_PROGRESS = [WIP, IN_REVIEW]
-  DONE = [CURRENT_DONE, HISTORICAL_DONE]
+  NOT_STARTED = [UP_NEXT]
 
   class << self
     def find_by_trello_identifier(trello_identifier)
@@ -26,10 +26,10 @@ class TrelloList
     def to_status(card)
       if IN_PROGRESS.map{|list| list['name']}.include?(card.list)
         'Work in Progress'
-      elsif DONE.map{|list| list['name']}.include?(card.list)
-        'Completed'
-      else
+      elsif NOT_STARTED.map{|list| list['name']}.include?(card.list)
         'Not started'
+      else
+        'Completed'
       end
     end
   end
