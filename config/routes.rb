@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   get '/burn-up' => 'teams#burn_up'
   get '/team-velocity' =>'teams#velocity'
+  get '/trello' => 'casein/admin_user_sessions#new'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
