@@ -5,7 +5,7 @@ $(function () {
             x: -20 //center
         },
         xAxis: {
-            categories: ['Mid APR', 'Early MAY', 'Mid MAY', 'Early JUN', 'Mid JUN']
+            categories: ['Mid APR', 'Early MAY', 'Mid MAY', 'Early JUN', 'Mid JUN', 'Early July']
         },
         yAxis: {
             title: {
@@ -28,22 +28,22 @@ $(function () {
         },
         series: [{
             name: 'Milli',
-            data: [20, 41, 65, 101, 143]
+            data: [20, 41, 65, 101, 143, 167]
         }, {
             name: 'LM Marketing',
-            data: [5, 7, 11, 15, 22]
+            data: [5, 7, 11, 15, 22, 30]
         }, {
             name: 'LM Lead',
-            data: [0, 0, 4, 5, 5]
+            data: [0, 0, 4, 5, 5, 5]
         }, {
             name: 'Home Now',
-            data: [11, 33, 42, 56, 75]
+            data: [11, 33, 42, 56, 75, 91]
         }, {
             name: 'Base Line',
-            data: [50, 100, 150, 200, 250]
+            data: [50, 100, 150, 200, 250, 300]
         }, {
             name: 'Total',
-            data: [36, 81, 122, 177, 245]
+            data: [36, 81, 122, 177, 245, 295]
         }]
     });
 });
