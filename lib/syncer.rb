@@ -39,11 +39,11 @@ class Syncer
       ActiveRecord::Base.connection.execute sql
     end
 
-    def save_previous(sprint_id)
-      sprint = Sprint.find(sprint_id)
-      trello_cards = Trello::Action.search("board:\"Awesome one team\" list:\"Sprint #{sprint.number} Done\" is:open", cards_limit: 200)['cards']
+    def save_previous(sprint_number)
+      sprint = Sprint.find_by_number(sprint_number)
+      trello_cards = Trello::Action.search("board:\"Awesome one team\" list:\"Sprint #{sprint_number} Done\" is:open", cards_limit: 200)['cards']
 
-      Syncer.mass_from_trello(trello_cards, HistoricalCard.name, sprint_id)
+      Syncer.mass_from_trello(trello_cards, HistoricalCard.name, sprint.id)
     end
   end
 end
