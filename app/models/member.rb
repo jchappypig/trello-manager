@@ -10,11 +10,11 @@ class Member
   class << self
 
     def find_by_trello_identifier(trello_identifier)
-      ALL.select{|label| label['trello_identifier'] == trello_identifier}.first
+      ALL.select{|member| member['trello_identifier'] == trello_identifier}.first
     end
 
     def to_field(members)
-      members.uniq.compact.map{|label| label['name']}.join(' | ')
+      members.uniq.compact.map{|member| member['name']}.join(' | ')
     end
   end
 end
