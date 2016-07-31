@@ -9,7 +9,7 @@
         },
 
         xAxis: {
-            categories: ['Mid APR', 'Early MAY', 'Mid MAY', 'Early JUN', 'Mid JUN', 'Early July']
+            categories: ['Mid APR', 'Early MAY', 'Mid MAY', 'Early JUN', 'Mid JUN', 'Early July', 'Late July']
         },
 
         yAxis: {
@@ -36,23 +36,23 @@
 
         series: [{
             name: 'Milli',
-            data: [20, 21, 24, 36, 42, 24],
+            data: [20, 21, 24, 36, 42, 24, 24],
             stack: 'actual'
         }, {
             name: 'LM Marketing',
-            data: [5, 2, 4, 4, 7, 8],
+            data: [5, 2, 4, 4, 7, 8, 3],
             stack: 'actual'
         }, {
             name: 'LM Lead',
-            data: [0, 0, 4, 1, 0, 0],
+            data: [0, 0, 4, 1, 0, 0, 0],
             stack: 'actual'
         }, {
             name: 'Home Now',
-            data: [11, 22, 9, 14, 19, 16],
+            data: [11, 22, 9, 14, 19, 16, 6],
             stack: 'actual'
         }, {
             name: 'Other',
-            data: [0, 0, 0, 0, 3, 2],
+            data: [0, 0, 0, 0, 3, 2, 0],
             stack: 'actual'
         }, {
             name: 'Newly Added',
@@ -60,7 +60,7 @@
             stack: 'planed'
         }, {
             name: 'Expected',
-            data: [0, 0, 0, 60, 38, 50],
+            data: [0, 0, 0, 60, 38, 50, 50],
             stack: 'planed'
         }]
     });
