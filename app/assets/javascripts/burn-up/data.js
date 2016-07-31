@@ -28,7 +28,7 @@ $(function () {
         },
         series: [{
             name: 'Milli',
-            data: [20, 41, 65, 101, 143, 167, 171]
+            data: [20, 41, 65, 101, 143, 167, 191]
         }, {
             name: 'LM Marketing',
             data: [5, 7, 11, 15, 22, 30, 33]
