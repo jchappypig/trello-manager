@@ -36,7 +36,7 @@
 
         series: [{
             name: 'Milli',
-            data: [20, 21, 24, 36, 42, 24, 24],
+            data: [20, 21, 24, 36, 42, 24, 24, 44],
             stack: 'actual'
         }, {
             name: 'LM Marketing',
@@ -60,7 +60,7 @@
             stack: 'planed'
         }, {
             name: 'Expected',
-            data: [0, 0, 0, 60, 38, 50, 50],
+            data: [0, 0, 0, 60, 38, 50, 50, 50],
             stack: 'planed'
         }]
     });
