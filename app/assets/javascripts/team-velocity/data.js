@@ -9,7 +9,7 @@
         },
 
         xAxis: {
-            categories: ['Mid APR', 'Early MAY', 'Mid MAY', 'Early JUN', 'Mid JUN', 'Early July', 'Late July']
+            categories: ['Mid APR', 'Early MAY', 'Mid MAY', 'Early JUN', 'Mid JUN', 'Early July', 'Late July', 'Early August']
         },
 
         yAxis: {
